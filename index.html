@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Zometa Dose Recommendation</title>
+</head>
+<body>
+	<h1>Zometa Dose Recommendation</h1>
+	<form>
+		<label for="weight">Actual Body Weight (kg):</label><br>
+		<input type="number" id="weight" name="weight"><br>
+
+		<label for="height">Height (cm):</label><br>
+		<input type="number" id="height" name="height"><br>
+
+		<label for="age">Age (years):</label><br>
+		<input type="number" id="age" name="age"><br>
+
+		<label for="gender">Gender:</label><br>
+		<select id="gender" name="gender">
+			<option value="male">Male</option>
+			<option value="female">Female</option>
+		</select><br>
+
+		<label for="creatinine">Serum Creatinine (mg/dL):</label><br>
+		<input type="number" id="creatinine" name="creatinine"><br>
+		
+		<button type="button" onclick="calculateDose()">Calculate Dose</button>
+	</form>
+
+	<p>Adjusted Body Weight: <span id="adjusted-body-weight"></span></p>
+	<p>Creatinine Clearance: <span id="creatinine-clearance"></span></p>
+	<p>Zometa Dose Recommendation: <span id="zometa-dose"></span></p>
+
+	<script>
+		function calculateAdjustedBodyWeight(actualBodyWeight, height, gender) {
+			let idealBodyWeight;
+			if (gender === "male") {
+				idealBodyWeight = 50 + 2.3 * ((height / 2.54) - 60);
+			} else if (gender === "female") {
+				idealBodyWeight = 45.5 + 2.3 * ((height / 2.54) - 60);
+			}
+			let adjustedBodyWeight = idealBodyWeight + 0.4 * (actualBodyWeight - idealBodyWeight);
+			return adjustedBodyWeight;
+		}
+
+		function calculateCreatinineClearance(actualBodyWeight, height, age, gender, serumCreatinine, adjustedBodyWeight) {
+			let creatinineClearance;
+			if (gender === "male") {
+				creatinineClearance = ((140 - age) * adjustedBodyWeight) / (72 * serumCreatinine);
+			} else if (gender === "female") {
+				creatinineClearance = ((140 - age) * adjustedBodyWeight * 0.85) / (72 * serumCreatinine);
+				// Note that the equation for females includes a correction factor of 0.85
+			}
+			return creatinineClearance;
+		}
+
+		function recommendZometaDose(creatinineClearance) {
+			let zometaDose;
+			if (creatinineClearance >= 60) {
+				zometaDose = "4 mg";
+			} else if (creatinineClearance >= 50) {
+				zometaDose = "3.5 mg";
+			} else if (creatinineClearance >= 40) {
+				zometaDose = "3.3 mg";
+			} else {
+				zometaDose = "Not recommended";
+			}
+			return zometaDose;
+		}
+
+		function calculateDose() {
+			let actualBodyWeight = parseFloat(document.getElementById("weight").value);
+			let height = parseFloat(document.getElementById("height").value);
+			let age = parseFloat(document.getElementById("age").value);
+			let gender = document.getElementById("gender").value;
+			let serumCreatinine = parseFloat(document.getElementById("creatinine").value);
+
+			let adjustedBodyWeight = calculateAdjustedBodyWeight(actualBodyWeight, height, gender);
+			document.getElementById("adjusted-body-weight").innerHTML = adjustedBodyWeight.toFixed(2);
+
+			let creatinineClearance = calculateCreatinineClearance(actualBodyWeight, height, age, gender, serumCreatinine, adjustedBodyWeight);
+			document.getElementById("creatinine-clearance").innerHTML = creatinineClearance.toFixed(2);
+
+			let zometaDose = recommendZometaDose(creatinineClearance);
+			document.getElementById("zometa-dose").innerHTML = zometaDose;
+		}
+	</script>
+</body>
+</html>
