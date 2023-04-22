@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Carboplatin Dose Calculator</title>
+  </head>
+  <body>
+    <h1>Carboplatin Dose Calculator</h1>
+    <form>
+      <label for="sex">Sex:</label>
+      <select id="sex" name="sex">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select><br>
+      <label for="age">Age (in years):</label>
+      <input type="number" id="age" name="age"><br>
+      <label for="weight">Weight (in kg):</label>
+      <input type="number" id="weight" name="weight"><br>
+      <label for="creatinine">Serum Creatinine (in mg/dL):</label>
+      <input type="number" id="creatinine" name="creatinine"><br>
+      <label for="multiplier">AUC Multiplier:</label>
+      <select id="multiplier" name="multiplier">
+        <option value="2">2</option>
+        <option value="5">5</option>
+      </select><br><br>
+      <button type="button" onclick="calculate()">Calculate Dose</button>
+    </form>
+    <br>
+    <div id="result-box">
+      <p id="result"></p>
+    </div>
+    <script>
+      function calculate() {
+        var sex = document.getElementById("sex").value;
+        var age = parseInt(document.getElementById("age").value);
+        var weight = parseFloat(document.getElementById("weight").value);
+        var creatinine = parseFloat(document.getElementById("creatinine").value);
+        var multiplier = parseInt(document.getElementById("multiplier").value);
+        if (isNaN(age) || isNaN(weight) || isNaN(creatinine) || isNaN(multiplier)) {
+          document.getElementById("result").innerHTML = "Please enter valid inputs.";
+        } else {
+          var cc;
+          if (sex === "male") {
+            cc = ((140 - age) * weight) / (72 * creatinine);
+          } else if (sex === "female") {
+            cc = ((140 - age) * weight) / (72 * creatinine) * 0.85;
+          }
+          var result = (cc + 25) * multiplier;
+          document.getElementById("result").innerHTML = "Carboplatin Dose: " + result.toFixed(1) + " mg";
+        }
+      }
+    </script>
+  </body>
+</html>
